@@ -1,0 +1,11 @@
+.git
+node_modules
+hls/*
+!hls/.gitkeep
+certs/*
+!certs/.gitkeep
+keys/*
+!keys/.gitkeep
+*.md
+.gitignore
+.dockerignore

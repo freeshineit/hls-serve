@@ -13,7 +13,6 @@ keys/hls.keyinfo
 !keys/.gitkeep
 
 # Docker
-.dockerignore
 
 # OS
 .DS_Store
