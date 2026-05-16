@@ -154,7 +154,7 @@ hls-serve/
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `HLS_BASE_URL` | `https://localhost` | 用于加密密钥 URI |
+| `HLS_BASE_URL` | `https://localhost:8888` | 用于加密密钥 URI |
 | `SOURCE_VIDEO` | `/data/download.mp4` | 源视频路径 |
 | `OUTPUT_DIR` | `/var/www/hls` | HLS 输出目录 |
 | `KEY_DIR` | `/var/www/keys` | 密钥输出目录 |

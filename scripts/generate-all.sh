@@ -9,7 +9,7 @@ set -euo pipefail
 SOURCE="${SOURCE_VIDEO:-/data/download.mp4}"
 OUTPUT_DIR="${OUTPUT_DIR:-/var/www/hls}"
 KEY_DIR="${KEY_DIR:-/var/www/keys}"
-BASE_URL="${HLS_BASE_URL:-https://localhost}"
+BASE_URL="${HLS_BASE_URL:-https://localhost:8888}"
 
 # ── Check prerequisites ─────────────────────────────────────────
 if [ ! -f "$SOURCE" ]; then
