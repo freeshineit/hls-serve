@@ -1,0 +1,26 @@
+# Generated HLS content
+hls/*
+!hls/.gitkeep
+
+# Generated certificates
+certs/*
+!certs/.gitkeep
+
+# Encryption keys (security)
+keys/hls.key
+keys/hls.iv
+keys/hls.keyinfo
+!keys/.gitkeep
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
