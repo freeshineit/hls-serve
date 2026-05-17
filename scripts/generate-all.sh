@@ -41,9 +41,9 @@ generate_key() {
     echo "▶ Generating AES-128 encryption key"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-    # 16 random bytes → hex
-    openssl rand -hex 16 > "$KEY_DIR/hls.key"
-    # IV (optional: 0x + 32 hex chars for 16 bytes)
+    # 16 random bytes (binary) -> required for HLS AES-128
+    openssl rand 16 > "$KEY_DIR/hls.key"
+    # IV (optional: 32 hex chars for 16 bytes)
     local iv
     iv=$(openssl rand -hex 16)
     echo "$iv" > "$KEY_DIR/hls.iv"
@@ -309,10 +309,14 @@ gen_encrypted() {
 
     echo "验证生成的密钥是否正确（检查是否能解密第一个片段）"
     local first_segment
-    first_segment=$(ls "${out}/segment_"*".ts" | head -n 1)
+    first_segment=$(ls "${out}/segment_"*".ts" 2>/dev/null | head -n 1)
     if [ -f "$first_segment" ]; then
         echo "验证能否解密第一个片段: $first_segment"
-        if ffmpeg -hide_banner -loglevel error -decryption_key "$(cat "$KEY_DIR/hls.key")" -i "$first_segment" -f null - 2>/dev/null; then
+        local hex_key
+        hex_key=$(hexdump -v -e '/1 "%02x"' "$KEY_DIR/hls.key")
+        local hex_iv
+        hex_iv=$(cat "$KEY_DIR/hls.iv")
+        if openssl aes-128-cbc -d -in "$first_segment" -out /dev/null -K "$hex_key" -iv "$hex_iv" 2>/dev/null; then
             echo "✓ Decryption verified: Successfully decrypted first segment."
         else
             echo "⚠ WARNING: Failed to decrypt first segment — there may be an issue with the key or encryption process."
@@ -473,4 +477,4 @@ echo "║  Master:     $OUTPUT_DIR/master.m3u8"
 echo "║  Key:        $KEY_DIR/hls.key"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
-ls -R "$OUTPUT_DIR" | head -80
+(ls -R "$OUTPUT_DIR" | head -80) || true
