@@ -29,7 +29,18 @@ if ffmpeg -hide_banner -encoders 2>/dev/null | grep -q libx265; then
     HAS_H265=true
     echo "✓ libx265 encoder is available"
 else
-    echo "⚠ libx265 encoder NOT available — H.265 variants will be skipped"
+    echo "⚠ libx265 encoder NOT available — Attempting to install x265..."
+    # Attempt to install x265 if user is on Alpine
+    if command -v apk >/dev/null 2>&1; then
+        apk add --no-cache x265 || true
+    fi
+    # Re-check
+    if ffmpeg -hide_banner -encoders 2>/dev/null | grep -q libx265; then
+        HAS_H265=true
+        echo "✓ libx265 encoder is now available"
+    else
+        echo "⚠ libx265 encoder STILL NOT available — H.265 variants will be skipped"
+    fi
 fi
 
 # ═══════════════════════════════════════════════════════════════
