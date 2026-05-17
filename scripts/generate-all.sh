@@ -299,6 +299,27 @@ gen_encrypted() {
         -hls_segment_filename "${out}/segment_%04d.ts" \
         "${out}/index.m3u8"
     echo "✓ Wrote: $out/index.m3u8"
+
+    echo "验证加密是否成功（检查是否有 EXT-X-KEY 标签）"
+    if grep -q "EXT-X-KEY" "${out}/index.m3u8"; then
+        echo "✓ Encryption verified: EXT-X-KEY tag found in manifest."
+    else
+        echo "⚠ WARNING: EXT-X-KEY tag NOT found in manifest — encryption may have failed."
+    fi
+
+    echo "验证生成的密钥是否正确（检查是否能解密第一个片段）"
+    local first_segment
+    first_segment=$(ls "${out}/segment_"*".ts" | head -n 1)
+    if [ -f "$first_segment" ]; then
+        echo "验证能否解密第一个片段: $first_segment"
+        if ffmpeg -hide_banner -loglevel error -decryption_key "$(cat "$KEY_DIR/hls.key")" -i "$first_segment" -f null - 2>/dev/null; then
+            echo "✓ Decryption verified: Successfully decrypted first segment."
+        else
+            echo "⚠ WARNING: Failed to decrypt first segment — there may be an issue with the key or encryption process."
+        fi
+    else
+        echo "⚠ WARNING: No segments found to verify decryption."
+    fi
 }
 
 # ═══════════════════════════════════════════════════════════════
