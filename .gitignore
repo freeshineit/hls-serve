@@ -17,6 +17,7 @@ keys/hls.keyinfo
 # OS
 .DS_Store
 Thumbs.db
+hls/.gitkeep
 
 # IDE
 .idea/
