@@ -29,9 +29,7 @@ RUN chmod +x /usr/local/bin/*.sh
 # Copy web assets
 COPY web/ /var/www/web/
 
-# Copy source video
-COPY download.mp4 /data/download.mp4
-
+# Source video is mounted at runtime via docker-compose
 # Expose ports
 EXPOSE 80 443
 
