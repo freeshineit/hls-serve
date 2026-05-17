@@ -6,6 +6,8 @@ LABEL description="HLS Streaming Server with Nginx + FFmpeg (HLS/VOD/Live/LL-HLS
 # Install ffmpeg + openssl on Alpine (much faster than Debian)
 RUN apk add --no-cache \
     ffmpeg \
+    x264 \
+    x265 \
     openssl \
     curl \
     ca-certificates \
