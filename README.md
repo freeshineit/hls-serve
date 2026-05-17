@@ -29,7 +29,10 @@
 
 ```bash
 cd hls-serve
-docker-compose up -d --build
+
+docker-compose up -d --build 
+
+docker-compose build --no-cache
 ```
 
 首次启动会自动：
