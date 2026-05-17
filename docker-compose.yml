@@ -6,6 +6,7 @@ services:
     container_name: hls-server
     ports:
       - "8888:443"
+      - "8088:80"
     volumes:
       # Persist generated HLS content
       - ./hls:/var/www/hls
