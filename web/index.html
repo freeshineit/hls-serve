@@ -183,7 +183,7 @@
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
 // ── Stream definitions ─────────────────────────────────────────
-const BASE = '/hls';
+const BASE = location.origin + '/hls';
 const streams = [
     // VOD
     { cat:'VOD (Video on Demand)', name:'VOD · TS · H.264',
