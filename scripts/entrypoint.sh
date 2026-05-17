@@ -16,14 +16,17 @@ else
 fi
 
 # ── Generate HLS content ───────────────────────────────────────
-echo ""
-echo "▶ HLS content not found — generating all variants …"
-echo "  (this may take a few minutes depending on video length)"
-generate-all.sh
-touch /var/www/hls/.generated
-echo ""
-echo "✓ HLS generation complete."
-
+if [ ! -f /var/www/hls/master.m3u8 ]; then
+    echo ""
+    echo "▶ HLS content not found — generating all variants …"
+    echo "  (this may take a few minutes depending on video length)"
+    generate-all.sh
+    echo ""
+    echo "✓ HLS generation complete."
+else
+    echo ""
+    echo "✓ HLS content already exists, skipping generation."
+fi
 
 # ── Verify critical files exist ────────────────────────────────
 echo ""
