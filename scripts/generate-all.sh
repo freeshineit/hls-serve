@@ -50,7 +50,7 @@ generate_key() {
 
     # keyinfo file for ffmpeg:  key_uri \n key_path \n IV (hex)
     cat > "$KEY_DIR/hls.keyinfo" <<EOF
-${BASE_URL}/keys/hls.key
+/keys/hls.key
 ${KEY_DIR}/hls.key
 ${iv}
 EOF
@@ -67,6 +67,10 @@ gen_vod_ts() {
     mkdir -p "$out"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     echo "▶ VOD / TS / H.264"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ffmpeg -hide_banner -loglevel warning -stats \
@@ -89,6 +93,10 @@ gen_vod_fmp4() {
     mkdir -p "$out"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     echo "▶ VOD / fMP4 / H.264"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ffmpeg -hide_banner -loglevel warning -stats \
@@ -111,6 +119,10 @@ gen_live_ts() {
     mkdir -p "$out"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     echo "▶ Live / TS / H.264"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ffmpeg -hide_banner -loglevel warning -stats \
@@ -135,6 +147,10 @@ gen_live_fmp4() {
     mkdir -p "$out"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     echo "▶ Live / fMP4 / H.264"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ffmpeg -hide_banner -loglevel warning -stats \
@@ -159,6 +175,10 @@ gen_llhls_ts() {
     mkdir -p "$out"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     echo "▶ LL-HLS / TS / H.264"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -210,6 +230,10 @@ gen_llhls_fmp4() {
     mkdir -p "$out"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     echo "▶ LL-HLS / fMP4 / H.264"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -287,6 +311,10 @@ gen_h265_ts() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "▶ VOD / TS / H.265"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     if [ "$HAS_H265" = true ]; then
         ffmpeg -hide_banner -loglevel warning -stats \
             -i "$SOURCE" \
@@ -314,6 +342,10 @@ gen_h265_fmp4() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "▶ VOD / fMP4 / H.265"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
     if [ "$HAS_H265" = true ]; then
         ffmpeg -hide_banner -loglevel warning -stats \
             -i "$SOURCE" \
@@ -338,6 +370,11 @@ gen_master() {
     local out="$OUTPUT_DIR"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    if [ -f "${out}/master.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/master.m3u8, skipping"
+        return
+    fi
     echo "▶ Master playlist (multi-variant)"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
