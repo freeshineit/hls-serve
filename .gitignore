@@ -1,6 +1,8 @@
 # Generated HLS content
 hls/*
 !hls/.gitkeep
+!hls/llhls-hevc
+!hls/h265
 
 # Generated certificates
 certs/*
