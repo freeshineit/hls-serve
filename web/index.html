@@ -102,6 +102,10 @@
         .btn-copy:hover { background: #1f6feb33; }
         .btn-player { background: #3fb95022; border-color: #3fb95044; color: var(--green); }
         .btn-player:hover { background: #3fb95033; }
+        .btn-disabled {
+            background: var(--border); border-color: var(--border); color: var(--muted);
+            cursor: not-allowed; pointer-events: none;
+        }
         .toast {
             position: fixed; bottom: 2rem; right: 2rem;
             background: var(--green); color: #000; padding: 0.6rem 1.2rem;
@@ -212,8 +216,8 @@ const streams = [
     // Encrypted
     { cat:'Encrypted (AES-128)', name:'Encrypted · TS · H.264',
       url:`${BASE}/encrypted/ts/index.m3u8`, tags:['h264','ts','enc'], type:'encrypted' },
-    { cat:'Encrypted (AES-128)', name:'Encrypted · fMP4 · H.265',
-      url:`${BASE}/encrypted/fmp4/index.m3u8`, tags:['h264','fmp4','enc'], type:'encrypted' },
+    { cat:'Encrypted (AES-128)', name:'Encrypted · fMP4 · H.265 not support',
+      url:``, tags:['h265','fmp4','enc'], type:'encrypted' },
 
     // H.265
     { cat:'H.265 / HEVC', name:'VOD · TS · H.265',
@@ -257,9 +261,9 @@ function render() {
                 <div class="url" id="url-${s.url.replace(/\W/g,'_')}">${s.url}</div>
                 <div class="tags">${tagsHtml}</div>
                 <div class="actions">
-                    <button class="btn btn-copy" onclick="copyUrl('${s.url}')">📋 Copy URL</button>
-                    <button class="btn btn-player" onclick="playStream('${s.url}')">▶ Play</button>
-                    <a class="btn" href="${s.url}" target="_blank">🔗 Open</a>
+                    <button class="btn btn-copy ${s.url ? '' : 'btn-disabled'}" onclick="copyUrl('${s.url}')">📋 Copy URL</button>
+                    <button class="btn btn-player ${s.url ? '' : 'btn-disabled'}" onclick="playStream('${s.url}')">▶ Play</button>
+                    <a class="btn ${s.url ? '' : 'btn-disabled'}" href="${s.url}" target="_blank">🔗 Open</a>
                 </div>
             </div>`;
         });
