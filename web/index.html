@@ -203,9 +203,17 @@ const streams = [
     { cat:'LL-HLS (Low Latency)', name:'LL-HLS · fMP4 · H.264',
       url:`${BASE}/llhls/fmp4/index.m3u8`, tags:['h264','fmp4','llhls'], type:'llhls' },
 
+    // LL-HLS HEVC (H.265) variants
+    { cat:'LL-HLS (Low Latency)', name:'LL-HLS · TS · H.265',
+      url:`${BASE}/llhls-hevc/ts/index.m3u8`, tags:['h264','ts','llhls'], type:'llhls' },
+    { cat:'LL-HLS (Low Latency)', name:'LL-HLS · fMP4 · H.265',
+      url:`${BASE}/llhls-hevc/fmp4/index.m3u8`, tags:['h264','fmp4','llhls'], type:'llhls' },
+
     // Encrypted
     { cat:'Encrypted (AES-128)', name:'Encrypted · TS · H.264',
       url:`${BASE}/encrypted/ts/index.m3u8`, tags:['h264','ts','enc'], type:'encrypted' },
+    { cat:'Encrypted (AES-128)', name:'Encrypted · fMP4 · H.265',
+      url:`${BASE}/encrypted/fmp4/index.m3u8`, tags:['h264','fmp4','enc'], type:'encrypted' },
 
     // H.265
     { cat:'H.265 / HEVC', name:'VOD · TS · H.265',
