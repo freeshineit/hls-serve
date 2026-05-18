@@ -25,6 +25,16 @@
 - Docker Compose 2.0+
 - 至少 2GB 可用磁盘空间
 
+### hevc
+
+```bash
+chmod +x ./scripts/generate-hevc.sh
+
+# generate hevc
+./scripts/generate-hevc.sh
+```
+
+
 ### 1. 启动服务
 
 ```bash
