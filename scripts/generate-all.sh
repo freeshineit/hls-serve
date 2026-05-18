@@ -7,6 +7,7 @@ set -euo pipefail
 # ══════════════════════════════════════════════════════════════════
 
 SOURCE="${SOURCE_VIDEO:-/data/download.mp4}"
+SOURCE_HEVC="${SOURCE_VIDEO:-/data/hevc.mp4}"
 OUTPUT_DIR="${OUTPUT_DIR:-/var/www/hls}"
 KEY_DIR="${KEY_DIR:-/var/www/keys}"
 BASE_URL="${HLS_BASE_URL:-https://localhost:8888}"
@@ -344,7 +345,7 @@ gen_h265_ts() {
     fi
     if [ "$HAS_H265" = true ]; then
         ffmpeg -hide_banner -loglevel warning -stats \
-            -i "$SOURCE" \
+            -i "$SOURCE_HEVC" \
             -c:v libx265 -preset fast -crf 28 \
             -tag:v hvc1 \
             -c:a aac -b:a 128k -ar 44100 \
@@ -375,7 +376,7 @@ gen_h265_fmp4() {
     fi
     if [ "$HAS_H265" = true ]; then
         ffmpeg -hide_banner -loglevel warning -stats \
-            -i "$SOURCE" \
+            -i "$SOURCE_HEVC" \
             -c:v libx265 -preset fast -crf 28 \
             -tag:v hvc1 \
             -c:a aac -b:a 128k -ar 44100 \
@@ -434,18 +435,18 @@ llhls/fmp4/index.m3u8
 encrypted/ts/index.m3u8
 MASTEREOF
 
-    if [ "$HAS_H265" = true ]; then
-        cat >> "${out}/master.m3u8" <<'MASTEREOF'
+#     if [ "$HAS_H265" = true ]; then
+#         cat >> "${out}/master.m3u8" <<'MASTEREOF'
 
-# H.265 — TS
-#EXT-X-STREAM-INF:BANDWIDTH=1200000,RESOLUTION=1280x720,CODECS="hvc1.1.6.L93.90,mp4a.40.2"
-h265/ts/index.m3u8
+# # H.265 — TS
+# #EXT-X-STREAM-INF:BANDWIDTH=1200000,RESOLUTION=1280x720,CODECS="hvc1.1.6.L93.90,mp4a.40.2"
+# h265/ts/index.m3u8
 
-# H.265 — fMP4
-#EXT-X-STREAM-INF:BANDWIDTH=1200000,RESOLUTION=1280x720,CODECS="hvc1.1.6.L93.90,mp4a.40.2"
-h265/fmp4/index.m3u8
-MASTEREOF
-    fi
+# # H.265 — fMP4
+# #EXT-X-STREAM-INF:BANDWIDTH=1200000,RESOLUTION=1280x720,CODECS="hvc1.1.6.L93.90,mp4a.40.2"
+# h265/fmp4/index.m3u8
+# MASTEREOF
+#     fi
 
     echo "✓ Wrote: $out/master.m3u8"
 }
@@ -465,8 +466,8 @@ gen_live_fmp4
 gen_llhls_ts
 gen_llhls_fmp4
 gen_encrypted_ts
-gen_h265_ts
-gen_h265_fmp4
+# gen_h265_ts
+# gen_h265_fmp4
 gen_master
 
 # ── Summary ─────────────────────────────────────────────────────
