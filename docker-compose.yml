@@ -18,6 +18,7 @@ services:
       - ./web:/var/www/web
       # Source video (read-only)
       - ./download.mp4:/data/download.mp4:ro
+      - ./hevc.mp4:/data/hevc.mp4:ro
     environment:
       - HLS_BASE_URL=https://localhost:8888
     restart: unless-stopped
