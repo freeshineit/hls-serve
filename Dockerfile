@@ -8,7 +8,7 @@ RUN apk update && \
     apk add --no-cache \
     ffmpeg \
     x264 \
-    x265 \
+    # x265 \
     openssl \
     curl \
     ca-certificates \
