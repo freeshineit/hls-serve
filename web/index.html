@@ -71,6 +71,7 @@
         .badge-h265 { background: #7c3aed33; color: var(--purple); }
         .badge-ts { background: #d2991d33; color: var(--orange); }
         .badge-fmp4 { background: #3fb95033; color: var(--green); }
+        .badge-cmaf { background: #58a6ff33; color: var(--accent); }
         .badge-live { background: #f8514933; color: var(--red); }
         .badge-llhls { background: #a371f733; color: var(--purple); }
         .badge-enc { background: #f8514933; color: var(--red); }
@@ -194,6 +195,8 @@ const streams = [
       url:`${BASE}/vod/ts/index.m3u8`, tags:['h264','ts'], type:'vod' },
     { cat:'VOD (Video on Demand)', name:'VOD · fMP4 · H.264',
       url:`${BASE}/vod/fmp4/index.m3u8`, tags:['h264','fmp4'], type:'vod' },
+    { cat:'VOD (Video on Demand)', name:'VOD · CMAF · H.264',
+      url:`${BASE}/vod/cmaf/index.m3u8`, tags:['h264','cmaf'], type:'vod' },
 
     // Live
     { cat:'Live (Event Playlist)', name:'Live · TS · H.264',
@@ -206,12 +209,16 @@ const streams = [
       url:`${BASE}/llhls/ts/index.m3u8`, tags:['h264','ts','llhls'], type:'llhls' },
     { cat:'LL-HLS (Low Latency)', name:'LL-HLS · fMP4 · H.264',
       url:`${BASE}/llhls/fmp4/index.m3u8`, tags:['h264','fmp4','llhls'], type:'llhls' },
+    { cat:'LL-HLS (Low Latency)', name:'LL-HLS · CMAF · H.264',
+      url:`${BASE}/llhls/cmaf/index.m3u8`, tags:['h264','cmaf','llhls'], type:'llhls' },
 
     // LL-HLS HEVC (H.265) variants
     { cat:'LL-HLS (Low Latency)', name:'LL-HLS · TS · H.265',
-      url:`${BASE}/llhls-hevc/ts/index.m3u8`, tags:['h264','ts','llhls'], type:'llhls' },
+      url:`${BASE}/llhls-hevc/ts/index.m3u8`, tags:['h265','ts','llhls'], type:'llhls' },
     { cat:'LL-HLS (Low Latency)', name:'LL-HLS · fMP4 · H.265',
-      url:`${BASE}/llhls-hevc/fmp4/index.m3u8`, tags:['h264','fmp4','llhls'], type:'llhls' },
+      url:`${BASE}/llhls-hevc/fmp4/index.m3u8`, tags:['h265','fmp4','llhls'], type:'llhls' },
+    { cat:'LL-HLS (Low Latency)', name:'LL-HLS · CMAF · H.265',
+      url:`${BASE}/llhls-hevc/cmaf/index.m3u8`, tags:['h265','cmaf','llhls'], type:'llhls' },
 
     // Encrypted
     { cat:'Encrypted (AES-128)', name:'Encrypted · TS · H.264',
@@ -224,6 +231,8 @@ const streams = [
       url:`${BASE}/h265/ts/index.m3u8`, tags:['h265','ts'], type:'vod' },
     { cat:'H.265 / HEVC', name:'VOD · fMP4 · H.265',
       url:`${BASE}/h265/fmp4/index.m3u8`, tags:['h265','fmp4'], type:'vod' },
+    { cat:'H.265 / HEVC', name:'VOD · CMAF · H.265',
+      url:`${BASE}/h265/cmaf/index.m3u8`, tags:['h265','cmaf'], type:'vod' },
 
     // Master
     { cat:'Master Playlist', name:'Multi-variant Master',
@@ -233,10 +242,10 @@ const streams = [
 // ── Render ─────────────────────────────────────────────────────
 const tagMap = {
     h264: 'badge-h264', h265: 'badge-h265',
-    ts: 'badge-ts', fmp4: 'badge-fmp4',
+    ts: 'badge-ts', fmp4: 'badge-fmp4', cmaf: 'badge-cmaf',
     live: 'badge-live', llhls: 'badge-llhls', enc: 'badge-enc'
 };
-const tagLabel = { h264:'H.264', h265:'H.265', ts:'TS', fmp4:'fMP4', live:'Live', llhls:'LL-HLS', enc:'AES-128' };
+const tagLabel = { h264:'H.264', h265:'H.265', ts:'TS', fmp4:'fMP4', cmaf:'CMAF', live:'Live', llhls:'LL-HLS', enc:'AES-128' };
 
 function render() {
     const container = document.getElementById('streams-container');

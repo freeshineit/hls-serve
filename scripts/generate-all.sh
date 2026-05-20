@@ -285,7 +285,86 @@ gen_llhls_fmp4() {
 }
 
 # ═══════════════════════════════════════════════════════════════
-# 8. Encrypted VOD  —  TS  (H.264 + AES-128)
+# 7.5 LL-HLS  —  CMAF  (H.264, low-latency CMAF Muxer)
+# ═══════════════════════════════════════════════════════════════
+gen_llhls_cmaf() {
+    local out="$OUTPUT_DIR/llhls/cmaf"
+    mkdir -p "$out"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
+    echo "▶ LL-HLS / CMAF / H.264"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    ffmpeg -hide_banner -loglevel warning -stats \
+        -i "$SOURCE" \
+        -map 0:v -c:v libx264 -preset fast -crf 23 \
+        -map 0:a -c:a aac -b:a 128k -ar 44100 \
+        -f dash \
+        -hls_playlist 1 \
+        -seg_duration 2 \
+        -frag_duration 0.5 \
+        -window_size 10 \
+        -extra_window_size 5 \
+        -ldash 1 \
+        "${out}/manifest.mpd"
+    
+    if [ -f "${out}/media_0.m3u8" ]; then
+        mv "${out}/media_0.m3u8" "${out}/index.m3u8"
+    fi
+    # Add LL-HLS tags if missing
+    if ! grep -q "EXT-X-SERVER-CONTROL" "${out}/index.m3u8" 2>/dev/null; then
+        echo "  → Adding LL-HLS tags to manifest …"
+        local tmp="${out}/index_lhls.m3u8"
+        {
+            echo "#EXTM3U"
+            echo "#EXT-X-VERSION:9"
+            echo "#EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=1.0,CAN-SKIP-UNTIL=12.0"
+            echo "#EXT-X-PART-INF:PART-TARGET=0.5"
+            echo "#EXT-X-TARGETDURATION:2"
+            tail -n +3 "${out}/index.m3u8" | grep -v "^#EXT-X-TARGETDURATION:" | grep -v "^#EXT-X-VERSION:"
+        } > "$tmp"
+        mv "$tmp" "${out}/index.m3u8"
+        echo "  ✓ LL-HLS manifest written."
+    fi
+    echo "✓ Wrote: $out/index.m3u8"
+}
+
+# ═══════════════════════════════════════════════════════════════
+# 8. CMAF VOD  —  (H.264, CMAF Muxer)
+# ═══════════════════════════════════════════════════════════════
+gen_vod_cmaf() {
+    local out="$OUTPUT_DIR/vod/cmaf"
+    mkdir -p "$out"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [ -f "${out}/index.m3u8" ]; then
+        echo "✓ ALREADY EXISTS: $out/index.m3u8, skipping"
+        return
+    fi
+    echo "▶ VOD / CMAF / H.264"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    ffmpeg -hide_banner -loglevel warning -stats \
+        -i "$SOURCE" \
+        -map 0:v -c:v libx264 -preset fast -crf 23 \
+        -map 0:a -c:a aac -b:a 128k -ar 44100 \
+        -f dash \
+        -hls_playlist 1 \
+        -seg_duration 4 \
+        -window_size 0 \
+        "${out}/manifest.mpd"
+    
+    if [ -f "${out}/media_0.m3u8" ]; then
+        mv "${out}/media_0.m3u8" "${out}/index.m3u8"
+    fi
+    echo "✓ Wrote: $out/index.m3u8"
+}
+
+# ═══════════════════════════════════════════════════════════════
+# 9. Encrypted VOD  —  TS  (H.264 + AES-128)
 # ═══════════════════════════════════════════════════════════════
 gen_encrypted_ts() {
     local out="$OUTPUT_DIR/encrypted/ts"
@@ -418,6 +497,10 @@ vod/ts/index.m3u8
 #EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
 vod/fmp4/index.m3u8
 
+# VOD — CMAF
+#EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
+vod/cmaf/index.m3u8
+
 # Live — TS
 #EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
 live/ts/index.m3u8
@@ -429,6 +512,10 @@ live/fmp4/index.m3u8
 # LL-HLS — fMP4
 #EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
 llhls/fmp4/index.m3u8
+
+# LL-HLS — CMAF
+#EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
+llhls/cmaf/index.m3u8
 
 # Encrypted — TS
 #EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
@@ -461,10 +548,12 @@ generate_key
 # Generate all variants
 gen_vod_ts
 gen_vod_fmp4
+gen_vod_cmaf
 gen_live_ts
 gen_live_fmp4
 gen_llhls_ts
 gen_llhls_fmp4
+gen_llhls_cmaf
 gen_encrypted_ts
 # gen_h265_ts
 # gen_h265_fmp4
