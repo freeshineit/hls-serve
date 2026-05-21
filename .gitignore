@@ -3,6 +3,7 @@ hls/*
 !hls/.gitkeep
 !hls/llhls-hevc
 !hls/h265
+!hls/cmaf
 !hls/encrypted/fmp4
 
 # Generated certificates
