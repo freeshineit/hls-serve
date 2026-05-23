@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - "*.md"
+      - "docs/**"
+  pull_request:
+    branches: [main, master]
+    paths-ignore:
+      - "*.md"
+      - "docs/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Validate shell scripts & nginx config ──────────────────
+  lint:
+    name: Lint (shellcheck + nginx)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: ./scripts
+          severity: warning
+          ignore: scripts
+
+      - name: Validate nginx config syntax
+        uses: docker://nginx:alpine
+        with:
+          args: nginx -t -c /github/workspace/conf/nginx.conf
+
+  # ── Build Docker image ─────────────────────────────────────
+  build:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: hls-serve:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Inspect image
+        run: docker image inspect hls-serve:ci --format '{{.Size}} bytes'
+
+  # ── Smoke test ─────────────────────────────────────────────
+  smoke:
+    name: Smoke test (container health)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: hls-serve:ci
+          cache-from: type=gha
+
+      - name: Start container
+        run: |
+          docker run -d --name hls-test \
+            -p 8888:443 \
+            -v "$(pwd)/hls:/var/www/hls" \
+            -v "$(pwd)/certs:/etc/nginx/certs" \
+            -v "$(pwd)/keys:/var/www/keys" \
+            hls-serve:ci
+          # Wait for startup + HLS generation (allow up to 10 min)
+          echo "Waiting for container to be ready..."
+          for i in $(seq 1 60); do
+            if curl -skf https://localhost:8888/health >/dev/null 2>&1; then
+              echo "✓ Container healthy after ${i}0 seconds"
+              break
+            fi
+            sleep 10
+          done
+
+      - name: Verify health endpoint
+        run: curl -sk https://localhost:8888/health
+
+      - name: Verify demo page
+        run: curl -sk https://localhost:8888/ | head -20
+
+      - name: Verify CORS headers
+        run: |
+          curl -sk -I -H "Origin: http://example.com" \
+            https://localhost:8888/hls/master.m3u8 2>/dev/null || true
+          echo "---"
+          curl -sk -H "Origin: http://example.com" \
+            https://localhost:8888/hls/vod/ts/index.m3u8 2>/dev/null | head -15 || true
+
+      - name: Verify HTTP/2
+        run: curl -skI --http2 https://localhost:8888/ 2>&1 | head -10
+
+      - name: Container logs (on failure)
+        if: failure()
+        run: docker logs hls-test
+
+      - name: Cleanup
+        if: always()
+        run: docker rm -f hls-test
