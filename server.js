@@ -4,23 +4,31 @@ const path = require("path");
 const cors = require("cors");
 
 const app = express();
-const RESOURCES_DIR = path.join(__dirname, "resources");
-const DEFAULT_PORT = Number(process.env.PORT) || 5000;
+const RESOURCES_DIR = path.join(__dirname, "hls");
+const DEFAULT_PORT = Number(process.env.PORT) || 9999;
 
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-  allowedHeaders: ["*"],
-  exposedHeaders: ["Content-Length", "Content-Range", "Content-Type"],
-  credentials: false,
-}));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["*"],
+    exposedHeaders: ["Content-Length", "Content-Range", "Content-Type"],
+    credentials: false,
+  }),
+);
 
 // 确保所有响应都带上 CORS 头（包括静态文件和错误响应）
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS",
+  );
   res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Expose-Headers", "Content-Length, Content-Range, Content-Type");
+  res.header(
+    "Access-Control-Expose-Headers",
+    "Content-Length, Content-Range, Content-Type",
+  );
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);
   }
