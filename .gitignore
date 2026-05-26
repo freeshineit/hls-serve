@@ -5,6 +5,8 @@ hls/*
 !hls/h265
 !hls/cmaf
 !hls/encrypted/fmp4
+!hls/package.json
+!hls/server.js
 
 # Generated certificates
 certs/*
